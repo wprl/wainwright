@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var deco = require('deco');
 var es = require('event-stream');
 var yaml = require('js-yaml');
@@ -82,21 +83,28 @@ function applyTemplate (templatePath, body, callback) {
 }
 
 var wainwright = module.exports = function (options) {
-  var metadata = deco.merge(options.metadata);
+  var metadata = deco.merge({
+    templateDirectory: './templates'
+  }, options.metadata);
 
   return es.map(function (file, callback) {
     extractMetadata(file.contents.toString(), function (error, extracted) {
       if (error) return callback(error);
-
+      // Merge file metadata over top of default metadata.
       var local = deco.merge(metadata, extracted.metadata);
-
+      // Rename the file if a new filename was specified.
       if (local.filename) {
         file.path = file.base + local.filename;
       }
-
+      // Pass through files without a tempalte unchanged.
       if (!local.template) return callback(null, file);
-
-      applyTemplate(process.cwd() + '/templates/' + local.template, extracted.data, function (error, applied) {
+      // Otherwise, apply the template.
+      var templatePath = path.resolve(
+        process.cwd(), 
+        local.templateDirectory, 
+        local.template
+      );
+      applyTemplate(templatePath, extracted.data, function (error, applied) {
         if (error) return callback(error);
         file.contents = new Buffer(applied);
         callback(null, file);
