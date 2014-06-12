@@ -1,6 +1,6 @@
 {
   "name": "wainwright",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Static site builder for gulp.",
   "main": "index.js",
   "scripts": {

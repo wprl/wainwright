@@ -85,25 +85,21 @@ var wainwright = module.exports = function (options) {
   var metadata = deco.merge(options.metadata);
 
   return es.map(function (file, callback) {
-    fs.readFile(file.path, function (error, contents) {
+    extractMetadata(file.contents.toString(), function (error, extracted) {
       if (error) return callback(error);
 
-      extractMetadata(contents.toString(), function (error, extracted) {
+      var local = deco.merge(metadata, extracted.metadata);
+
+      if (local.filename) {
+        file.path = file.base + local.filename;
+      }
+
+      if (!local.template) return callback(null, file);
+
+      applyTemplate(process.cwd() + '/templates/' + local.template, extracted.data, function (error, applied) {
         if (error) return callback(error);
-
-        var local = deco.merge(metadata, extracted.metadata);
-
-        if (local.filename) {
-          file.path = file.base + local.filename;
-        }
-
-        if (!local.template) return callback(null, file);
-
-        applyTemplate(process.cwd() + '/templates/' + local.template, extracted.data, function (error, applied) {
-          if (error) return callback(error);
-          file.contents = new Buffer(applied);
-          callback(null, file);
-        });
+        file.contents = new Buffer(applied);
+        callback(null, file);
       });
     });
   });
