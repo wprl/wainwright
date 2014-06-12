@@ -99,7 +99,7 @@ var wainwright = module.exports = function (options) {
 
         if (!local.template) return callback(null, file);
 
-        applyTemplate(__dirname + '/templates/' + local.template, extracted.data, function (error, applied) {
+        applyTemplate(process.cwd() + '/templates/' + local.template, extracted.data, function (error, applied) {
           if (error) return callback(error);
           file.contents = new Buffer(applied);
           callback(null, file);
