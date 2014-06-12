@@ -10,7 +10,7 @@ Parses files with or without YAML metadata headers and applies templates.
 Metadata
 --------
 
-Supported values are filename, and template.
+Currently supported values are filename and template.  Other values are treated as arbitrary locals and merged with defaults.
 
 ©2014 William Riley-Land
 
