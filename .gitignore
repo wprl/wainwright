@@ -1,0 +1,36 @@
+# Config
+runtime.json
+
+# OSX
+.AppleDouble
+.LSOverride
+Icon
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Emacs
+~*
+
+# NodeJS
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+.BC.*
+pids
+logs
+results
+npm-debug.log
+node_modules
+
+# Build & Testing
+documentation
+docs
+coverage
+build
