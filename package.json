@@ -1,0 +1,19 @@
+{
+  "name": "wainwright",
+  "version": "0.1.0",
+  "description": "Static site builder for gulp.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "static",
+    "html",
+    "gulp",
+    "site",
+    "builder",
+    "template"
+  ],
+  "author": "William Riley-Land",
+  "license": "ISC"
+}
