@@ -81,9 +81,10 @@ function applyTemplate (templatePath, body, callback) {
   });
 }
 
-var templar = module.exports = function () {
-  var metadata = {};
-  var stream = es.map(function (file, callback) {
+var wainwright = module.exports = function (options) {
+  var metadata = deco.merge(options.metadata);
+
+  return es.map(function (file, callback) {
     fs.readFile(file.path, function (error, contents) {
       if (error) return callback(error);
 
@@ -106,10 +107,4 @@ var templar = module.exports = function () {
       });
     });
   });
-  stream.metadata = function (newMetadata) {
-    if (!newMetadata) return metadata;
-    metadata = deco.merge(newMetadata, metadata);
-    return stream;
-  };
-  return stream;
 };
