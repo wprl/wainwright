@@ -36,19 +36,19 @@ function extractMetadata (content, callback) {
   var end;
   var result;
   var metadata = '';
-  var data = content;
+  var body = content;
   if (content.slice(0, 3) === '---') {
     result = content.match(/^-{3,}\s([\s\S]*?)-{3,}(\s[\s\S]*|\s?)$/);
     if (result && result.length === 3) {
       metadata = result[1];
-      data = result[2];
+      body = result[2];
     }
   } 
   else if (content.slice(0, 12) === '```metadata\n') {
     end = content.indexOf('\n```\n');
     if (end !== -1) {
       metadata = content.substring(12, end);
-      data = content.substring(end + 5);
+      body = content.substring(end + 5);
     }
   }
 
@@ -56,12 +56,12 @@ function extractMetadata (content, callback) {
     if (error) return callback(error);
     callback(null, {
       metadata: parsed,
-      data: data
+      body: body
     });
   });
 };
 
-function applyTemplate (templatePath, body, callback) {
+function applyTemplate (templatePath, metadata, callback) {
   // load template
   fs.readFile(templatePath, function (error, templateContents) {
     if (error) return callback(error);
@@ -69,10 +69,10 @@ function applyTemplate (templatePath, body, callback) {
     var applied;
     // get tempalte engine based on extension & apply
     if (extension === 'mustache') {
-      applied = hogan.compile(templateContents.toString()).render(body);
+      applied = hogan.compile(templateContents.toString()).render(metadata);
     }
     else if (extension === 'xmlb') {
-      applied = xmlb.compile(templateContents.toString())(body);
+      applied = xmlb.compile(templateContents.toString())(metadata);
     }
     else {
       return callback(new Error('Unknown template extension.'));
@@ -83,28 +83,32 @@ function applyTemplate (templatePath, body, callback) {
 }
 
 var wainwright = module.exports = function (options) {
-  var metadata = deco.merge({
-    templateDirectory: './templates'
-  }, options.metadata);
-
+  // Merge instance metadata on top of defaults.
+  var defaults = { templateDirectory: './templates' };
+  var metadata = deco.merge(defaults, options.metadata);
+  // Build the stream that does all the work.
   return es.map(function (file, callback) {
+    // Split the file into a YAML header and the actual body/content.
     extractMetadata(file.contents.toString(), function (error, extracted) {
       if (error) return callback(error);
-      // Merge file metadata over top of default metadata.
-      var local = deco.merge(metadata, extracted.metadata);
+      // Merge file metadata over top of instance metadata.
+      var locals = deco.merge(metadata, extracted.metadata);
+      // Add the file body to the locals.
+      locals.body = extracted.body;
       // Rename the file if a new filename was specified.
-      if (local.filename) {
-        file.path = file.base + local.filename;
+      if (locals.filename) {
+        file.path = file.base + locals.filename;
       }
-      // Pass through files without a tempalte unchanged.
-      if (!local.template) return callback(null, file);
-      // Otherwise, apply the template.
+      // Pass through files without a template unchanged.
+      if (!locals.template) return callback(null, file);
+      // Otherwise, apply the template.  But first, figure out
+      // where they are located.
       var templatePath = path.resolve(
         process.cwd(), 
-        local.templateDirectory, 
-        local.template
+        locals.templateDirectory, 
+        locals.template
       );
-      applyTemplate(templatePath, extracted.data, function (error, applied) {
+      applyTemplate(templatePath, locals, function (error, applied) {
         if (error) return callback(error);
         file.contents = new Buffer(applied);
         callback(null, file);
