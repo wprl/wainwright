@@ -1,6 +1,6 @@
 {
   "name": "wainwright",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Static site builder for gulp.",
   "main": "index.js",
   "scripts": {
@@ -30,6 +30,8 @@
     "event-stream": "^3.1.5",
     "hogan.js": "^3.0.1",
     "js-yaml": "^3.0.2",
-    "xmlb": "^0.1.1"
+    "xmlb": "^0.1.1",
+    "highlight.js": "^8.0.0",
+    "marked": "^0.3.2"
   }
 }
