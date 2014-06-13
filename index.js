@@ -110,7 +110,7 @@ var wainwright = module.exports = function (options) {
   return es.map(function (file, callback) {
     var parsed;
     var pathParts;
-    var contents = file.contents.toString();
+    var contents = file.contents ? file.contents.toString() : undefined;
     // Function to process a file.
     function applyLocals (locals, callback) {
       // Rename the file if a new filename was specified.
@@ -132,6 +132,8 @@ var wainwright = module.exports = function (options) {
         callback(null, file);
       });
     }
+    // Pass through directories and empty files.
+    if (!contents) return callback(null, file);
     // JSON files can't have YAML headers.
     if (matchExtension(file, '.json')) {
       try {
