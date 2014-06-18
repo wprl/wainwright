@@ -12,6 +12,7 @@ Functionality
  * Apply template using engine(s) of your choice
  * Supports generators (for things like pagination and A/B testing)
 
+
  Generators
  ----------
 
