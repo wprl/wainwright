@@ -1,6 +1,6 @@
 {
   "name": "wainwright",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Static site builder for gulp.",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,8 @@
     "gulp",
     "site",
     "builder",
-    "template"
+    "template",
+    "blog"
   ],
   "author": "William Riley-Land",
   "license": "MIT",

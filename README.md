@@ -12,11 +12,36 @@ Functionality
  * Apply template using engine(s) of your choice
  * Supports generators (for things like pagination and A/B testing)
 
+Usage
+-----
+
+Here's an example gulp task.
+
+```javascript
+gulp.task('build-html', function () {
+  // Create a "wagon" to hold these statics.  You can create multiple "wagons"
+  // to use different pipelines for different static file definitions.
+  var wagon = wainwright();
+  // Apply templates to static file definitions.  By default, `templateDirectory`
+  // is set to `./templates`, but can be overridden when creating a wagon.  
+  var templated = gulp.src('./content/**/*').pipe(wagon);
+  // Write the processed pages to the build directory.
+  templated.pipe(gulp.dest('./build'));
+  // Generate the blog list pages.  The `metadata` method returns a stream of
+  // internal wainwright contexts.  The processed contexts built from the file,
+  // its template, and its metadata can be filtered by path using the same
+  // syntax as `gulp.src`.
+  wagon.metadata('./blog/**/*.html')
+    .pipe(paginator())
+    .pipe(gulp.dest('./build'));
+});
+```
+
 
  Generators
  ----------
 
-An example of a paginator e.g. for a list of articles generated from static blog entry files.
+An example of a paginator i.e. for a list of articles generated from static blog entry files.
 
 ```javascript
 var wainwright = require('wainwright');
@@ -73,26 +98,6 @@ var paginator = module.exports = function (options) {
 };
 ```
 
-Here's an example gulp task using the paginator.
 
-```javascript
-gulp.task('build-html', function () {
-  // Create a "wagon" to hold these statics.  You can create multiple "wagons"
-  // to use different pipelines for different static file definitions.
-  var wagon = wainwright();
-  // Apply templates to static file definitions.  By default, `templateDirectory`
-  // is set to `./templates`, but can be overridden when creating a wagon.  
-  var templated = gulp.src('./content/**/*').pipe(wagon);
-  // Write the processed pages to the build directory.
-  templated.pipe(gulp.dest('./build'));
-  // Generate the blog list pages.  The `metadata` method returns a stream of
-  // internal wainwright contexts.  The processed contexts built from the file,
-  // its template, and its metadata can be filtered by path using the same
-  // syntax as `gulp.src`.
-  wagon.metadata('./blog/**/*.html')
-    .pipe(paginator())
-    .pipe(gulp.dest('./build'));
-});
-```
 
 ©2014 William Riley-Land
