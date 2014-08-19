@@ -31,16 +31,16 @@ function parseMetadata (source, callback) {
 
   try {
     return callback(null, yaml.load(source) || {});
-  } 
+  }
   catch (error) {
     if (error.problem != null && error.problemMark != null) {
       lines = error.problemMark.buffer.split('\n');
       for (i = 0; i < error.problemMark.column; i++) {
         markerPad += ' ';
       }
-      error.message = "YAML: " + error.problem + "\n\n" 
+      error.message = "YAML: " + error.problem + "\n\n"
         + lines[error.problemMark.line] + "\n" + markerPad + "^\n";
-    } 
+    }
     else {
       error.message = "YAML Parsing error " + error.message;
     }
@@ -60,7 +60,7 @@ function extractMetadata (content, callback) {
       metadata = result[1];
       body = result[2];
     }
-  } 
+  }
   else if (content.slice(0, 12) === '```metadata\n') {
     end = content.indexOf('\n```\n');
     if (end !== -1) {
@@ -101,9 +101,9 @@ var wainwright = module.exports = function (options) {
         var c = path.resolve(metadata.cwd, metadata.base, condition);
         if (!gulpmatch(metadata, c)) return;
         this.emit('data', metadata);
-      }, 
-      function () { 
-        this.emit('end') 
+      },
+      function () {
+        this.emit('end')
       }
     ));
   };
@@ -161,7 +161,7 @@ wainwright.extract = function () {
       callback(null, metadata);
     });
   });
-};    
+};
 // Apply template if applicable.
 wainwright.template = function () {
   return es.map(function (metadata, callback) {
@@ -169,13 +169,13 @@ wainwright.template = function () {
     if (!metadata.template) return callback(null, metadata);
     // First, figure out where the templates are located.
     metadata.template = path.resolve(
-      metadata.cwd, 
-      metadata.templateDirectory, 
+      metadata.cwd,
+      metadata.templateDirectory,
       metadata.template
     );
     // Choose which template engine to use by matching the
     // file extenstion of the template.
-    var extension = metadata.template.split('.').pop();  
+    var extension = metadata.template.split('.').pop();
     consolidate[extension](metadata.template, metadata, function (error, applied) {
       if (error) return callback(error);
       metadata.rendered = applied;
