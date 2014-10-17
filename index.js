@@ -11,6 +11,7 @@ var markdown = require('marked');
 var gulpmatch = require('gulp-match');
 var highlight = require('highlight.js');
 var consolidate = require('consolidate');
+var htmling = require('htmling');
 var File = require('vinyl');
 // ## Configuration
 // Set up code highlighting for markdown transforms.
@@ -54,6 +55,7 @@ function extractMetadata (content, callback) {
   var metadata = '';
   var body = content;
 
+  // Metadata is defined by either starting and ending line,
   if (content.slice(0, 3) === '---') {
     result = content.match(/^-{3,}\s([\s\S]*?)-{3,}(\s[\s\S]*|\s?)$/);
     if (result && result.length === 3) {
@@ -61,6 +63,7 @@ function extractMetadata (content, callback) {
       body = result[2];
     }
   }
+  // or Markdown metadata section at beginning of file.
   else if (content.slice(0, 12) === '```metadata\n') {
     end = content.indexOf('\n```\n');
     if (end !== -1) {
@@ -176,6 +179,18 @@ wainwright.template = function () {
     // Choose which template engine to use by matching the
     // file extenstion of the template.
     var extension = metadata.template.split('.').pop();
+    // HTMLing support isn't in consolidate :(
+    // https://github.com/visionmedia/consolidate.js/pull/162
+    if (extension === 'html') {
+      fs.readFile(metadata.template, function (error, file) {
+        if (error) return callback(error);
+        var template = htmling.string(file.toString());
+        metadata.rendered = template.render(metadata, metadata.body);
+        callback(null, metadata);
+      });
+      return;
+    }
+    // Otherwise, use consolidate.
     consolidate[extension](metadata.template, metadata, function (error, applied) {
       if (error) return callback(error);
       metadata.rendered = applied;

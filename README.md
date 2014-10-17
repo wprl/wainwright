@@ -3,7 +3,7 @@ wainwright
 
 A tool for building static sites with gulp.  Inspired by wintersmith.
 
-This module's API is stabilizing but may change.  
+This module's API is stabilizing but may change.
 
 Functionality
 -------------
@@ -11,6 +11,7 @@ Functionality
  * Parse files with or without YAML headers
  * Apply template using engine(s) of your choice
  * Supports generators (for things like pagination and A/B testing)
+ * Supports parsing Polymer/htmling templates
 
 Usage
 -----
@@ -23,7 +24,7 @@ gulp.task('build-html', function () {
   // to use different pipelines for different static file definitions.
   var wagon = wainwright();
   // Apply templates to static file definitions.  By default, `templateDirectory`
-  // is set to `./templates`, but can be overridden when creating a wagon.  
+  // is set to `./templates`, but can be overridden when creating a wagon.
   var templated = gulp.src('./content/**/*').pipe(wagon);
   // Write the processed pages to the build directory.
   templated.pipe(gulp.dest('./build'));
@@ -93,7 +94,7 @@ var paginator = module.exports = function (options) {
     wainwright.template(),
     // Convert the metadata into an output file.
     wainwright.file()
-  );  
+  );
   return stream;
 };
 ```
