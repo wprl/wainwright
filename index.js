@@ -185,7 +185,9 @@ wainwright.template = function () {
       fs.readFile(metadata.template, function (error, file) {
         if (error) return callback(error);
         var template = htmling.string(file.toString());
-        metadata.rendered = template.render(metadata, metadata.body);
+        var bodyTemplate = htmling.string(metadata.body);
+        var body = bodyTemplate.render(metadata);
+        metadata.rendered = template.render(metadata, body);
         callback(null, metadata);
       });
       return;
